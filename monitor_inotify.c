@@ -326,11 +326,19 @@ inotify_thread(void *arg)
 					i += EVENT_SIZE + event->len;
 					continue;
 				}
+#if 1
+        /* 2026-03-10 som: skip directory by basename */
+        if ( event->mask & IN_ISDIR && (event->mask & (IN_CREATE|IN_MOVED_TO)) && is_skip_dir(event->name) )
+        {
+          i += EVENT_SIZE + event->len;
+          continue;
+        }
+#endif
 				esc_name = modifyString(strdup(event->name), "&", "&amp;amp;", 0);
 				snprintf(path_buf, sizeof(path_buf), "%s/%s", get_path_from_wd(event->wd), event->name);
 				if ( event->mask & IN_ISDIR && (event->mask & (IN_CREATE|IN_MOVED_TO)) )
 				{
-					DPRINTF(E_DEBUG, L_INOTIFY,  "The directory %s was %s.\n",
+					DPRINTF(E_INFO, L_INOTIFY,  "The directory %s was %s.\n",
 						path_buf, (event->mask & IN_MOVED_TO ? "moved here" : "created"));
 					monitor_insert_directory(pollfds[0].fd, esc_name, path_buf);
 				}
@@ -339,7 +347,7 @@ inotify_thread(void *arg)
 				{
 					if( (event->mask & (IN_MOVED_TO|IN_CREATE)) && (S_ISLNK(st.st_mode) || st.st_nlink > 1) )
 					{
-						DPRINTF(E_DEBUG, L_INOTIFY, "The %s link %s was %s.\n",
+						DPRINTF(E_INFO, L_INOTIFY, "The %s link %s was %s.\n",
 							(S_ISLNK(st.st_mode) ? "symbolic" : "hard"),
 							path_buf, (event->mask & IN_MOVED_TO ? "moved here" : "created"));
 						if( stat(path_buf, &st) == 0 && S_ISDIR(st.st_mode) )
@@ -360,7 +368,7 @@ inotify_thread(void *arg)
 				}
 				else if ( event->mask & (IN_DELETE|IN_MOVED_FROM) )
 				{
-					DPRINTF(E_DEBUG, L_INOTIFY, "The %s %s was %s.\n",
+					DPRINTF(E_INFO, L_INOTIFY, "The %s %s was %s.\n",
 						(event->mask & IN_ISDIR ? "directory" : "file"),
 						path_buf, (event->mask & IN_MOVED_FROM ? "moved away" : "deleted"));
 					if ( event->mask & IN_ISDIR )

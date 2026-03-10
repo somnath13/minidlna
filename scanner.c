@@ -623,7 +623,17 @@ sql_failed:
 static inline int
 filter_hidden(scan_filter *d)
 {
+/* 2026-03-10 som: skip directory by basename */
+#if 1
+  // skip hidden file
+	if (d->d_name[0] == '.') return 0;
+  // conditional skip directory
+  if (is_dir(d) == 1 && is_skip_dir(d->d_name)) return 0;
+  // include everything else
+  return 1;
+#else  // original code
 	return (d->d_name[0] != '.');
+#endif
 }
 
 static int

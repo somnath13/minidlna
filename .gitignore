@@ -35,3 +35,15 @@ po/stamp-po
 stamp-h1
 .deps/
 *.o
+
+compile
+linux/minidlna.init.d.script
+ls-R
+minidlnad
+tagutils/
+
+/ls-R
+/tags
+/tags.*
+**/*.sw[n-p]
+/.project

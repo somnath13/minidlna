@@ -110,3 +110,7 @@ void	timevalsub(struct timeval *t1, const struct timeval *t2);
 	    ((tvp)->tv_sec cmp (uvp)->tv_sec))
 
 #endif
+
+/* 2026-03-10 som: skip directory by basename */
+int is_skip_dir(const char *basename);
+

@@ -576,3 +576,21 @@ timevalfix(struct timeval *t1)
 		t1->tv_usec -= 1000000;
 	}
 }
+
+/*
+ * 2026-03-10 som: skip directory by basename
+ *
+ * This function is only aware of the basename of the directory,
+ * not the full path, so it cannot be easily extended to detect
+ * the presence of a .nomedia file in the directory.
+ */
+int
+is_skip_dir(const char *basename)
+{
+  // skip hidden directory
+  if (basename[0] == '.') return 1;
+  // skip directory containing subtitles
+  if (strncmp(basename, "Subs", 5) == 0) return 1;
+  // include all other directories
+  return 0;
+}

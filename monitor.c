@@ -339,6 +339,11 @@ monitor_insert_directory(int fd, char *name, const char * path)
 	{
 		if( e->d_name[0] == '.' )
 			continue;
+#if 1
+    /* 2026-03-10 som: skip directory by basename */
+    if (is_dir(e) == 1 && is_skip_dir(e->d_name))
+      continue;
+#endif
 		esc_name = escape_tag(e->d_name, 1);
 		snprintf(path_buf, sizeof(path_buf), "%s/%s", path, e->d_name);
 		switch( e->d_type )
